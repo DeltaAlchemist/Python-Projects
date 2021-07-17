@@ -10,25 +10,30 @@ oficina6 = oficina7 = oficina8 = oficina9 = []
 # Listas
 oficinasGeral = [0, oficina1, oficina2, oficina3, oficina4, oficina5, oficina6, oficina7, oficina8, oficina9]
 
-oficinas2Serie = ("1 -> Criar e contar histórias (Segunda-feira - Manhã)",
-                  "3 -> A língua de sinais (Quarta-feira - Manhã)",
-                  "8 -> O mundo da imaginação (Quarta-feira - Tarde)",
-                  "9 -> Criando e recriando com emojis (Sexta-feira - Tarde)")
+oficinas2Serie = ("#1 -> Criar e contar histórias (Segunda-feira - Manhã)",
+                  "#3 -> A língua de sinais (Quarta-feira - Manhã)",
+                  "#8 -> O mundo da imaginação (Quarta-feira - Tarde)",
+                  "#9 -> Criando e recriando com emojis (Sexta-feira - Tarde)")
 
-oficinas3Serie = ("1 -> Criar e contar histórias (Segunda-feira - Manhã)",
-                  "2 -> Teatro: Luz, Câmera e Ação (Terça-feira - Manhã)",
-                  "3 -> A língua de sinais (Quarta-feira - Manhã)",
-                  "7 -> O corpo fala (Terça-feira - Tarde)")
+oficinas3Serie = ("#1 -> Criar e contar histórias (Segunda-feira - Manhã)",
+                  "#2 -> Teatro: Luz, Câmera e Ação (Terça-feira - Manhã)",
+                  "#3 -> A língua de sinais (Quarta-feira - Manhã)",
+                  "#7 -> O corpo fala (Terça-feira - Tarde)")
 
-oficinas4Serie = ("2 -> Teatro: Luz, Câmera e Ação (Terça-feira - Manhã)",
-                  "3 -> A língua de sinais (Quarta-feira - Manhã)",
-                  "4 -> Expressão Artística (Quinta-feira - Manhã)",
-                  "6 -> Leitura dinâmica (Segunda-feira/Quinta-feira - Tarde)")
+oficinas4Serie = ("#2 -> Teatro: Luz, Câmera e Ação (Terça-feira - Manhã)",
+                  "#3 -> A língua de sinais (Quarta-feira - Manhã)",
+                  "#4 -> Expressão Artística (Quinta-feira - Manhã)",
+                  "#6 -> Leitura dinâmica (Segunda-feira/Quinta-feira - Tarde)")
 
-oficinas5Serie = ("3 -> A língua de sinais (Quarta-feira - Manhã)",
-                  "4 -> Expressão Artística (Quinta-feira - Manhã)",
-                  "5 - > Soletrando (Sexta-feira - Manhã)",
-                  "6 -> Leitura dinâmica (Segunda-feira/Quinta-feira - Tarde)")
+oficinas5Serie = ("#3 -> A língua de sinais (Quarta-feira - Manhã)",
+                  "#4 -> Expressão Artística (Quinta-feira - Manhã)",
+                  "#5 -> Soletrando (Sexta-feira - Manhã)",
+                  "#6 -> Leitura dinâmica (Segunda-feira/Quinta-feira - Tarde)")
+
+
+def definirIndexOficina(escolha, oficina):
+    oficinas = ((), (), (1, 3, 8, 9), (1, 2, 3, 7), (2, 3, 4, 6), (3, 4, 5, 6))
+    return oficinas[oficina].index(escolha)
 
 
 def showMenu():
@@ -36,16 +41,38 @@ def showMenu():
           "2 - Fazer Inscrições\n3 - Listar Inscrições\n4 - Sair")
 
 
-def escolherOficina(oficina, listaOficinas, idAluno):
-    print("Escolha uma oficina (de acordo com o código):")
-    print(*oficina, sep="\n")
-    escolha = int(input("-> "))
-    if len(listaOficinas[escolha]) > 10:
-        raise Exception("Número limite de alunos alcançado. Você não pode se registrar.")
+def validarLimiteInscricao(escolha, listaOficinas):
+    if len(listaOficinas[escolha]) > 3:
+        return True
     else:
-        listaOficinas[escolha].append(idAluno)
-        print("Foram realizadas {} inscrições até o momento".format(len(listaOficinas[escolha])))
+        return False
 
+
+def escolherOficina(oficina, listaOficinas, idAluno):
+    oficinasBanidas = [0] * len(oficina)
+    while True:
+        print("Escolha uma oficina (de acordo com o código):")
+        for x in range(len(oficina)):
+            if oficina[x] != oficinasBanidas[x]:
+                print(oficina[x], sep="\n")
+
+        escolha = int(input("-> "))
+
+        validar_inscricao = True
+
+        for aluno in listaOficinas[escolha]:
+            if aluno == idAluno:
+                validar_inscricao = False
+
+        if validarLimiteInscricao(escolha, listaOficinas):
+            print("Número limite de alunos alcançado. Você não pode se registrar.\n")
+            oficinasBanidas[definirIndexOficina(escolha, listaOficinas)] = escolha
+        elif not validar_inscricao:
+            print("Não pode ter um aluno inscrito duas vezes em uma mesma oficina. Tente Novamente\n")
+        else:
+            listaOficinas[escolha].append(idAluno)
+            print("Foram realizadas {} inscrições até o momento\n".format(len(listaOficinas[escolha])))
+            break
 
 showMenu()
 option = int(input("--> "))
@@ -79,43 +106,15 @@ while True:
             if rmAlunos[i] == rmInscricao:
                 if rmSeries[i] == 2:
                     escolherOficina(oficinas2Serie, oficinasGeral, rmInscricao)
-                    for esc in range(3):
-                        print("Deseja escolher mais uma oficina? (S ou N)")
-                        continuar = input("--> ")
-                        if continuar == "S":
-                            escolherOficina(oficinas2Serie, oficinasGeral, rmInscricao)
-                        elif continuar == "N":
-                            break
 
                 elif rmSeries[i] == 3:
                     escolherOficina(oficinas3Serie, oficinasGeral, rmInscricao)
-                    for esc in range(3):
-                        print("Deseja escolher mais uma oficina? (S ou N)")
-                        continuar = input("--> ")
-                        if continuar == "S":
-                            escolherOficina(oficinas3Serie, oficinasGeral, rmInscricao)
-                        elif continuar == "N":
-                            break
 
                 elif rmSeries[i] == 4:
                     escolherOficina(oficinas4Serie, oficinasGeral, rmInscricao)
-                    for esc in range(3):
-                        print("Deseja escolher mais uma oficina? (S ou N)")
-                        continuar = input("--> ")
-                        if continuar == "S":
-                            escolherOficina(oficinas4Serie, oficinasGeral, rmInscricao)
-                        elif continuar == "N":
-                            break
 
                 elif rmSeries[i] == 5:
                     escolherOficina(oficinas5Serie, oficinasGeral, rmInscricao)
-                    for esc in range(3):
-                        print("Deseja escolher mais uma oficina? (S ou N)")
-                        continuar = input("--> ")
-                        if continuar == "S":
-                            escolherOficina(oficinas5Serie, oficinasGeral, rmInscricao)
-                        elif continuar == "N":
-                            break
 
             elif rmInscricao == 0:
                 break
