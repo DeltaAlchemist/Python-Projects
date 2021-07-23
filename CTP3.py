@@ -1,45 +1,17 @@
-# Listas
-rmAlunos = []
-nomes = []
-rmSeries = []
-menu_l = []
-blank = []
-# Oficinas manhã
-oficina1 = []
-oficina2 = []
-oficina3 = []
-oficina4 = []
-oficina5 = []
-# Oficinas tarde
-oficina6 = []
-oficina7 = []
-oficina8 = []
-oficina9 = []
-# Listas
-oficinasGeral = [
-    blank, oficina1, oficina2, oficina3, oficina4, oficina5, oficina6, oficina7, oficina8, oficina9
-]
-studentsInfo = []
+def fillWorkshopsByGrade(oficinas, serie2, serie3, serie4, serie5):
+    series = ((1, 3, 8, 9), (1, 2, 3, 7), (2, 3, 4, 6), (3, 4, 5, 6))
 
-oficinas2Serie = ("#1 -> Criar e contar histórias (Segunda-feira - Manhã)",
-                  "#3 -> A língua de sinais (Quarta-feira - Manhã)",
-                  "#8 -> O mundo da imaginação (Quarta-feira - Tarde)",
-                  "#9 -> Criando e recriando com emojis (Sexta-feira - Tarde)")
-
-oficinas3Serie = ("#1 -> Criar e contar histórias (Segunda-feira - Manhã)",
-                  "#2 -> Teatro: Luz, Câmera e Ação (Terça-feira - Manhã)",
-                  "#3 -> A língua de sinais (Quarta-feira - Manhã)",
-                  "#7 -> O corpo fala (Terça-feira - Tarde)")
-
-oficinas4Serie = ("#2 -> Teatro: Luz, Câmera e Ação (Terça-feira - Manhã)",
-                  "#3 -> A língua de sinais (Quarta-feira - Manhã)",
-                  "#4 -> Expressão Artística (Quinta-feira - Manhã)",
-                  "#6 -> Leitura dinâmica (Segunda-feira/Quinta-feira - Tarde)")
-
-oficinas5Serie = ("#3 -> A língua de sinais (Quarta-feira - Manhã)",
-                  "#4 -> Expressão Artística (Quinta-feira - Manhã)",
-                  "#5 -> Soletrando (Sexta-feira - Manhã)",
-                  "#6 -> Leitura dinâmica (Segunda-feira/Quinta-feira - Tarde)")
+    for x in range(len(series)):
+        for y in range(len(series[x])):
+            nomeOficina = "#" + str(series[x][y]) + " -> " + oficinas[series[x][y]]
+            if x == 0:
+                serie2.append(nomeOficina)
+            elif x == 1:
+                serie3.append(nomeOficina)
+            elif x == 2:
+                serie4.append(nomeOficina)
+            else:
+                serie5.append(nomeOficina)
 
 
 def indexWorkshop(escolha, oficina):
@@ -52,30 +24,43 @@ def showMenu():
           "2 - Fazer Inscrições\n3 - Listar Inscrições\n4 - Sair")
 
 
-def chooseWorkShop(oficina, listaOficinas, idAluno):
+def chooseWorkShop(oficina, listaOficinas, idAluno, indexSerie):
     oficinas_banidas = [0] * len(oficina)
+    oficinasPorSerie = ((1, 3, 8, 9), (1, 2, 3, 7), (2, 3, 4, 6), (3, 4, 5, 6))
     while True:
-        print("Escolha uma oficina (de acordo com o código):")
+        print("\nEscolha uma oficina (de acordo com o código):")
         for x in range(len(oficina)):
             if oficina[x] != oficinas_banidas[x]:
                 print(oficina[x], sep="\n")
 
         escolha = int(input("-> "))
 
-        validar_inscricao = True
+        oficinaInvalida = True
+        for x in range(len(oficinasPorSerie)):
+            if not oficinaInvalida:
+                break
+            for y in range(len(oficinasPorSerie[x])):
+                if oficinasPorSerie[indexSerie][y] == escolha:
+                    oficinaInvalida = False
+                    break
+        if oficinaInvalida:
+            print("\nCódigo de oficina inválido para a série do aluno.")
+            continue
+
+        inscricaoDuplicada = False
 
         for aluno in listaOficinas[escolha]:
             if aluno == idAluno:
-                validar_inscricao = False
+                inscricaoDuplicada = True
 
         if len(listaOficinas[escolha]) > 10:
-            print("Número limite de alunos alcançado. Você não pode se registrar.\n")
+            print("\nNúmero limite de alunos alcançado. Você não pode se registrar.")
             oficinas_banidas[indexWorkshop(escolha, listaOficinas)] = escolha
-        elif not validar_inscricao:
-            print("Não pode ter um aluno inscrito duas vezes em uma mesma oficina. Tente Novamente\n")
+        elif inscricaoDuplicada:
+            print("\nNão pode ter um aluno inscrito duas vezes em uma mesma oficina.")
         else:
             listaOficinas[escolha].append(idAluno)
-            print("Foram realizadas {} inscrições nessa oficina até o momento\n".format(len(listaOficinas[escolha])))
+            print("\nForam realizadas {} inscrições nessa oficina até o momento".format(len(listaOficinas[escolha])))
             break
 
 
@@ -89,22 +74,17 @@ def fillStudentsInfo(rmAluno, nomeAluno, finalArr, series):
         finalArr.append([rmAluno[x], nomeAluno[x], printGrade(series[x])])
 
 
-def nameStudent(nomeAluno):
-    return str.lower(nomeAluno)
-
-
 def organizeArrayAlphabetically(finalArr):
     finalArr.sort(key=lambda pair: pair[1])
 
 
-def printStudentsInfo(array, oficina):
+def printStudentsInfo(array, oficina, tituloOficina):
     print()
     for j in array:
         print("\033[1m" + "RM: " + str(j[0]) + " - " + j[1] + " - " + j[2] + "\033[0m")
         print("\033[1m" + "Oficinas:" + "\033[0m")
-        print(printStudentWorkshop(j[0], oficina))
+        print(printStudentWorkshop(j[0], oficina, tituloOficina))
         print()
-    print()
 
 
 def searchStudentInWorkshop(rm, oficina, index):
@@ -116,11 +96,11 @@ def searchStudentInWorkshop(rm, oficina, index):
     return False
 
 
-def printStudentsInfoByWorkshop(array, oficina):
+def printStudentsInfoByWorkshop(array, oficina, tituloOficina):
     workshops = []  # Oficinas por extenso
-    rms = []    # RMs dos alunos cadastrados
-    idxOficina = []     # Indexes das oficinas
-    alunos = []     # RMs organizados pelo index das oficinas (nested)
+    rms = []  # RMs dos alunos cadastrados
+    idxOficina = []  # Indexes das oficinas
+    alunos = []  # RMs organizados pelo index das oficinas (nested)
 
     # Enchendo as listas:
     for k in array:
@@ -131,13 +111,13 @@ def printStudentsInfoByWorkshop(array, oficina):
         for y in x:
             idxOficina.append(y)
 
-    idxOficina = list(dict.fromkeys(idxOficina))    # Removendo oficinas repetidas
+    idxOficina = list(dict.fromkeys(idxOficina))  # Removendo oficinas repetidas
     workshops.clear()
 
     for o in idxOficina:
-        workshops.append(printWorkshop(o))  # Colocando as oficinas por extenso
+        workshops.append(printWorkshop(o, tituloOficina))  # Colocando as oficinas por extenso
 
-    for x in idxOficina:    # Relacionando RMs com os index da oficina (alunos[])
+    for x in idxOficina:  # Relacionando RMs com os index da oficina (alunos[])
         rmPack = [[]]
         for y in range(len(rms)):
             if searchStudentInWorkshop(rms[y], oficina, x):
@@ -147,9 +127,9 @@ def printStudentsInfoByWorkshop(array, oficina):
 
     for x in range(len(workshops)):
         total = 0
-        print(workshops[x])
+        print("- " + workshops[x] + " -")
         for y in array:
-            for a in range(len(alunos[x])):     # Buscando info dos RMs (nome, serie)
+            for a in range(len(alunos[x])):  # Buscando info dos RMs (nome, serie)
                 if y[0] == alunos[x][a]:
                     total += 1
                     print("\033[1m" + "RM: " + str(y[0]) + " - " + y[1] + " - " + y[2] + "\033[0m")
@@ -170,34 +150,18 @@ def searchStudentWorkshop(idAluno, oficina):
     return indexOficinas
 
 
-def printWorkshop(w):
-    if w == 1:
-        return "Criar e contar histórias (2ª feira - Manhã)"
-    elif w == 2:
-        return "Teatro: Luz, Câmera e Ação (3ª feira - Manhã)"
-    elif w == 3:
-        return "A língua de sinais (4ª feira - Manhã)"
-    elif w == 4:
-        return "Expressão Artística (5ª feira - Manhã)"
-    elif w == 5:
-        return "Soletrando (6ª feira - Manhã)"
-    elif w == 6:
-        return "Leitura dinâmica (2ª feira / 5ª feira - Tarde)"
-    elif w == 7:
-        return "O corpo fala (3ª feira - Tarde)"
-    elif w == 8:
-        return "O mundo da imaginação (4ª feira - Tarde)"
-    elif w == 9:
-        return "Criando e recriando com emojis (6ª feira - Tarde)"
-    else:
+def printWorkshop(w, nomeOficina):
+    if w < 1 or w > 9:
         return
+    else:
+        return nomeOficina[w]
 
 
-def printStudentWorkshop(idAluno, oficina):
+def printStudentWorkshop(idAluno, oficina, tituloOficina):
     workshops = []
     ids = searchStudentWorkshop(idAluno, oficina)
     for x in range(len(ids)):
-        workshops.append(printWorkshop(ids[x]))
+        workshops.append(printWorkshop(ids[x], tituloOficina))
 
     return '\n'.join(workshops)
 
@@ -213,7 +177,47 @@ def printGrade(series):
         return "5ª. série"
 
 
+# Listas
+rmAlunos = []
+nomes = []
+rmSeries = []
+menu_l = []
+# Oficinas manhã
+oficina1 = []
+oficina2 = []
+oficina3 = []
+oficina4 = []
+oficina5 = []
+# Oficinas tarde
+oficina6 = []
+oficina7 = []
+oficina8 = []
+oficina9 = []
+# Listas
+oficinasGeral = [
+    [], oficina1, oficina2, oficina3, oficina4, oficina5, oficina6, oficina7, oficina8, oficina9
+]
+
+tituloOficinas = ("",
+                  "Criar e contar histórias (2ª feira - Manhã)",
+                  "Teatro: Luz, Câmera e Ação (3ª feira - Manhã)",
+                  "A língua de sinais (4ª feira - Manhã)",
+                  "Expressão Artística (5ª feira - Manhã)",
+                  "Soletrando (6ª feira - Manhã)",
+                  "Leitura dinâmica (2ª feira / 5ª feira - Tarde)",
+                  "O corpo fala (3ª feira - Tarde)",
+                  "O mundo da imaginação (4ª feira - Tarde)",
+                  "Criando e recriando com emojis (6ª feira - Tarde)")
+
+oficinas2Serie = []
+oficinas3Serie = []
+oficinas4Serie = []
+oficinas5Serie = []
+
+studentsInfo = []
+
 # Main Class:
+fillWorkshopsByGrade(tituloOficinas, oficinas2Serie, oficinas3Serie, oficinas4Serie, oficinas5Serie)
 showMenu()
 option = int(input("--> "))
 while True:
@@ -249,26 +253,26 @@ while True:
         option = int(input("--> "))
 
     if option == 2:
-        rmInscricao = int(input("Insira o RM do aluno: "))
+        rmInscricao = int(input("\nInsira o RM do aluno: "))
         for i in range(len(rmAlunos)):
             if rmAlunos[i] == rmInscricao:
                 if rmSeries[i] == 2:
-                    chooseWorkShop(oficinas2Serie, oficinasGeral, rmInscricao)
+                    chooseWorkShop(oficinas2Serie, oficinasGeral, rmInscricao, 0)
 
                 elif rmSeries[i] == 3:
-                    chooseWorkShop(oficinas3Serie, oficinasGeral, rmInscricao)
+                    chooseWorkShop(oficinas3Serie, oficinasGeral, rmInscricao, 1)
 
                 elif rmSeries[i] == 4:
-                    chooseWorkShop(oficinas4Serie, oficinasGeral, rmInscricao)
+                    chooseWorkShop(oficinas4Serie, oficinasGeral, rmInscricao, 2)
 
                 elif rmSeries[i] == 5:
-                    chooseWorkShop(oficinas5Serie, oficinasGeral, rmInscricao)
+                    chooseWorkShop(oficinas5Serie, oficinasGeral, rmInscricao, 3)
 
             elif rmInscricao == 0:
                 break
 
             elif rmInscricao not in rmAlunos:
-                print("Aluno não cadastrado. Favor procurar a coordenação do Fundamental I")
+                print("\nAluno não cadastrado. Favor procurar a coordenação do Fundamental I")
                 break
 
     if option == 3:
@@ -277,11 +281,11 @@ while True:
         menuLista = int(input("Listar Inscrições\n1 - Listar por Aluno\n2 - Listar por Oficina\n--> "))
         if menuLista == 1:
             print("\n***** Alunos inscritos – Ordem: Alfabética (nome) *****")
-            printStudentsInfo(studentsInfo, oficinasGeral)
+            printStudentsInfo(studentsInfo, oficinasGeral, tituloOficinas)
         if menuLista == 2:
             print("\n***** Alunos inscritos – Ordem: Alfabética (Oficinas) *****")
             print("\033[1m" + "Oficinas:" + "\033[0m")
-            printStudentsInfoByWorkshop(studentsInfo, oficinasGeral)
+            printStudentsInfoByWorkshop(studentsInfo, oficinasGeral, tituloOficinas)
 
     if option == 4:
         break
