@@ -28,6 +28,9 @@ def chooseWorkShop(oficina, listaOficinas, idAluno, indexSerie):
     oficinas_banidas = [0] * len(oficina)
     oficinasPorSerie = ((1, 3, 8, 9), (1, 2, 3, 7), (2, 3, 4, 6), (3, 4, 5, 6))
     while True:
+        if len(searchStudentWorkshop(idAluno, listaOficinas)) > 2:
+            print("\nNúmero limite de oficinas registradas alcançado. Você não pode mais inscrever esse aluno.")
+            break
         print("\nEscolha uma oficina (de acordo com o código):")
         for x in range(len(oficina)):
             if oficina[x] != oficinas_banidas[x]:
@@ -244,7 +247,7 @@ while True:
             serieCadastro = int(input("\nDigite (2) para 2º Série\n(3) para 3º Série\n(4) para 4º Série\n(5) para 5º "
                                       "Série\n--> "))
             while serieCadastro < 2 or serieCadastro > 5:
-                print("Série inválida! Apenas séries inicias (1º a 5º)")
+                print("\nSérie inválida! Apenas séries iniciais (1º a 5º)")
                 serieCadastro = int(input("\nDigite (2) para 2º Série\n(3) para 3º Série\n(4) para 4º Série\n(5) para "
                                           "5º Série\n--> "))
             rmSeries.append(serieCadastro)
