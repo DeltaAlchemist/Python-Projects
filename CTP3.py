@@ -25,7 +25,7 @@ def fillFullWorkshops(array):
 
 
 def chooseWorkShop(oficina, listaOficinas, idAluno, indexSerie, oficinaLotada):
-    oficinasPorSerie = ((1, 3, 8, 9), (1, 2, 3, 7), (2, 3, 4, 6), (3, 4, 5, 6))
+    oficinasSeries = ((1, 3, 8, 9), (1, 2, 3, 7), (2, 3, 4, 6), (3, 4, 5, 6))
     fillFullWorkshops(oficinaLotada)
     while True:
         if len(searchStudentWorkshop(idAluno, listaOficinas)) > 2:
@@ -33,17 +33,17 @@ def chooseWorkShop(oficina, listaOficinas, idAluno, indexSerie, oficinaLotada):
             break
         print("\nEscolha uma oficina (de acordo com o código):")
         for x in range(len(oficina)):
-            if oficinasPorSerie[indexSerie][x] != oficinaLotada[indexSerie][x]:
+            if oficinasSeries[indexSerie][x] != oficinaLotada[indexSerie][x]:
                 print(oficina[x], sep="\n")
 
         escolha = int(input("-> "))
 
         oficinaInvalida = True
-        for x in range(len(oficinasPorSerie)):
+        for x in range(len(oficinasSeries)):
             if not oficinaInvalida:
                 break
-            for y in range(len(oficinasPorSerie[x])):
-                if oficinasPorSerie[indexSerie][y] == escolha:
+            for y in range(len(oficinasSeries[x])):
+                if oficinasSeries[indexSerie][y] == escolha:
                     oficinaInvalida = False
                     break
         if oficinaInvalida:
@@ -58,9 +58,9 @@ def chooseWorkShop(oficina, listaOficinas, idAluno, indexSerie, oficinaLotada):
 
         if len(listaOficinas[escolha]) > 9:
             print("\nNúmero limite de alunos alcançado. Você não pode se registrar.")
-            for x in range(len(oficinasPorSerie)):
-                for y in range(len(oficinasPorSerie[x])):
-                    if oficinasPorSerie[indexSerie][y] == escolha:
+            for x in range(len(oficinasSeries)):
+                for y in range(len(oficinasSeries[x])):
+                    if oficinasSeries[indexSerie][y] == escolha:
                         oficinaLotada[x][y] = escolha
             break
         elif inscricaoDuplicada:
@@ -134,7 +134,7 @@ def printStudentsInfoByWorkshop(array, oficina, tituloOficina):
 
     for x in range(len(workshops)):
         total = 0
-        print("- " + workshops[x])
+        print("> " + workshops[x])
         for y in array:
             for a in range(len(alunos[x])):  # Buscando info dos RMs (nome, serie)
                 if y[0] == alunos[x][a]:
@@ -184,26 +184,44 @@ def printGrade(series):
         return "5ª. série"
 
 
+def registerStudent(listaAlunos, listaPorSerie):
+    while True:
+        rmCadastro = int(input("\nInsira o RM: "))
+        if rmCadastro == 0:
+            break
+        rmDuplicado = False
+        for x in range(len(listaAlunos)):
+            if rmCadastro == listaAlunos[x]:
+                print("\nRM já existe no sistema!")
+                rmDuplicado = True
+                break
+        if rmDuplicado:
+            continue
+
+        listaAlunos.append(rmCadastro)
+
+        nomeCadastro = input("\nInsira o nome do aluno: ")
+        nomes.append(nomeCadastro)
+
+        serieCadastro = int(input("\nDigite (2) para 2º Série\n(3) para 3º Série\n(4) para 4º Série\n(5) para 5º "
+                                  "Série\n--> "))
+        while serieCadastro < 2 or serieCadastro > 5:
+            print("\nSérie inválida! Apenas séries iniciais (1º a 5º)")
+            serieCadastro = int(input("\nDigite (2) para 2º Série\n(3) para 3º Série\n(4) para 4º Série\n(5) para "
+                                      "5º Série\n--> "))
+        listaPorSerie.append(serieCadastro)
+
+    showMenu()
+
+
 # Listas
 rmAlunos = []
 nomes = []
 rmSeries = []
 menu_l = []
-# Oficinas manhã
-oficina1 = []
-oficina2 = []
-oficina3 = []
-oficina4 = []
-oficina5 = []
-# Oficinas tarde
-oficina6 = []
-oficina7 = []
-oficina8 = []
-oficina9 = []
-# Listas
-oficinasGeral = [
-    [], oficina1, oficina2, oficina3, oficina4, oficina5, oficina6, oficina7, oficina8, oficina9
-]
+
+# Oficinas
+registroOficinas = [[], [], [], [], [], [], [], [], [], []]
 
 tituloOficinas = ("",
                   "Criar e contar histórias (2ª feira - Manhã)",
@@ -216,47 +234,19 @@ tituloOficinas = ("",
                   "O mundo da imaginação (4ª feira - Tarde)",
                   "Criando e recriando com emojis (6ª feira - Tarde)")
 
-oficinas2Serie = []
-oficinas3Serie = []
-oficinas4Serie = []
-oficinas5Serie = []
+oficinasPorSerie = [[], [], [], []]
 oficinasLotadas = []
 studentsInfo = []
 
 # Main Class:
-fillWorkshopsByGrade(tituloOficinas, oficinas2Serie, oficinas3Serie, oficinas4Serie, oficinas5Serie)
+fillWorkshopsByGrade(tituloOficinas, oficinasPorSerie[0], oficinasPorSerie[1], oficinasPorSerie[2], oficinasPorSerie[3])
+print("\nBem-vindo(a) ao Colégio Nova Esperança - Evento Literário")
 showMenu()
 option = int(input("--> "))
 while True:
     if option == 1 and 1 not in menu_l:
         menu_l.append(1)
-        while True:
-            rmCadastro = int(input("\nInsira o RM: "))
-            if rmCadastro == 0:
-                break
-            rmDuplicado = False
-            for i in range(len(rmAlunos)):
-                if rmCadastro == rmAlunos[i]:
-                    print("\nRM já existe no sistema!")
-                    rmDuplicado = True
-                    break
-            if rmDuplicado:
-                continue
-
-            rmAlunos.append(rmCadastro)
-
-            nomeCadastro = input("\nInsira o nome do aluno: ")
-            nomes.append(nomeCadastro)
-
-            serieCadastro = int(input("\nDigite (2) para 2º Série\n(3) para 3º Série\n(4) para 4º Série\n(5) para 5º "
-                                      "Série\n--> "))
-            while serieCadastro < 2 or serieCadastro > 5:
-                print("\nSérie inválida! Apenas séries iniciais (1º a 5º)")
-                serieCadastro = int(input("\nDigite (2) para 2º Série\n(3) para 3º Série\n(4) para 4º Série\n(5) para "
-                                          "5º Série\n--> "))
-            rmSeries.append(serieCadastro)
-
-        showMenu()
+        registerStudent(rmAlunos, rmSeries)
         option = int(input("--> "))
 
     if option == 2:
@@ -264,13 +254,13 @@ while True:
         for i in range(len(rmAlunos)):
             if rmAlunos[i] == rmInscricao:
                 if rmSeries[i] == 2:
-                    chooseWorkShop(oficinas2Serie, oficinasGeral, rmInscricao, 0, oficinasLotadas)
+                    chooseWorkShop(oficinasPorSerie[0], registroOficinas, rmInscricao, 0, oficinasLotadas)
                 elif rmSeries[i] == 3:
-                    chooseWorkShop(oficinas3Serie, oficinasGeral, rmInscricao, 1, oficinasLotadas)
+                    chooseWorkShop(oficinasPorSerie[1], registroOficinas, rmInscricao, 1, oficinasLotadas)
                 elif rmSeries[i] == 4:
-                    chooseWorkShop(oficinas4Serie, oficinasGeral, rmInscricao, 2, oficinasLotadas)
+                    chooseWorkShop(oficinasPorSerie[2], registroOficinas, rmInscricao, 2, oficinasLotadas)
                 elif rmSeries[i] == 5:
-                    chooseWorkShop(oficinas5Serie, oficinasGeral, rmInscricao, 3, oficinasLotadas)
+                    chooseWorkShop(oficinasPorSerie[3], registroOficinas, rmInscricao, 3, oficinasLotadas)
 
             elif rmInscricao == 0:
                 break
@@ -285,11 +275,11 @@ while True:
         menuLista = int(input("Listar Inscrições\n1 - Listar por Aluno\n2 - Listar por Oficina\n--> "))
         if menuLista == 1:
             print("\n***** Alunos inscritos – Ordem: Alfabética (nome) *****")
-            printStudentsInfo(studentsInfo, oficinasGeral, tituloOficinas)
+            printStudentsInfo(studentsInfo, registroOficinas, tituloOficinas)
         if menuLista == 2:
             print("\n***** Alunos inscritos – Ordem: Alfabética (Oficinas) *****")
             print("\033[1mOficinas: \033[0m")
-            printStudentsInfoByWorkshop(studentsInfo, oficinasGeral, tituloOficinas)
+            printStudentsInfoByWorkshop(studentsInfo, registroOficinas, tituloOficinas)
 
     if option == 4:
         break
