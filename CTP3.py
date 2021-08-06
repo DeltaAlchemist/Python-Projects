@@ -184,7 +184,7 @@ def printGrade(series):
         return "5ª. série"
 
 
-def registerStudent(listaAlunos, listaPorSerie):
+def registerStudent(listaAlunos, listaPorSerie, blockWks):
     while True:
         rmCadastro = int(input("\nInsira o RM: "))
         if rmCadastro == 0:
@@ -201,7 +201,7 @@ def registerStudent(listaAlunos, listaPorSerie):
         listaAlunos.append(rmCadastro)
 
         nomeCadastro = input("\nInsira o nome do aluno: ")
-        nomes.append(nomeCadastro)
+        names.append(nomeCadastro)
 
         serieCadastro = int(input("\n\033[1mEscolha a série do aluno:\033[0m\nDigite (2) para 2º Série\n(3) para 3º "
                                   "Série\n(4) para 4º Série\n(5) para 5º Série\n--> "))
@@ -211,24 +211,25 @@ def registerStudent(listaAlunos, listaPorSerie):
                                       "(3) para 3º Série\n(4) para 4º Série\n(5) para 5º Série\n--> "))
         listaPorSerie.append(serieCadastro)
 
-    showMenu()
+    showMenu(blockWks)
 
 
-def showMenu():
-    print("\n-- MENU --\nEscolha uma opção (1-4):\n1 - Cadastrar Alunos\n"
-          "2 - Fazer Inscrições\n3 - Listar Inscrições\n4 - Sair")
+def showMenu(blockWks):
+    print("\n-- MENU --\nEscolha uma opção (1-4):")
+    if not blockWks:
+        print("1 - Cadastrar Alunos")
+    print("2 - Fazer Inscrições\n3 - Listar Inscrições\n4 - Sair")
 
 
 # Listas
-rmAlunos = []
-nomes = []
-rmSeries = []
-menu_l = []
+idStudent = []
+names = []
+idSeries = []
 
 # Oficinas
-registroOficinas = [[], [], [], [], [], [], [], [], [], [], []]
+workshopRegistrationArray = [[], [], [], [], [], [], [], [], [], [], []]
 
-tituloOficinas = ("",
+workshopsTitle = ("",
                   "Criar e contar histórias (2ª feira - Matutino)",
                   "Teatro: Luz, Câmera e Ação (3ª feira - Matutino)",
                   "A língua de sinais (4ª feira - Matutino)",
@@ -240,56 +241,58 @@ tituloOficinas = ("",
                   "Leitura dinâmica (5ª feira - Vespertino)",
                   "Criando e recriando com emojis (6ª feira - Vespertino)")
 
-oficinasPorSerie = [[], [], [], []]
-oficinasLotadas = []
+workshopsByGrade = [[], [], [], []]
+fullWorkshops = []
 studentsInfo = []
 
 # Main Class:
-fillWorkshopsByGrade(tituloOficinas, oficinasPorSerie[0], oficinasPorSerie[1], oficinasPorSerie[2], oficinasPorSerie[3])
-fillFullWorkshops(oficinasLotadas)
+fillWorkshopsByGrade(workshopsTitle, workshopsByGrade[0], workshopsByGrade[1], workshopsByGrade[2], workshopsByGrade[3])
+fillFullWorkshops(fullWorkshops)
+block_option = False
 print("\nBem-vindo(a) ao Colégio Nova Esperança - Evento Literário")
-showMenu()
+showMenu(block_option)
 option = int(input("--> "))
 while True:
-    if option == 1 and 1 not in menu_l:
-        menu_l.append(1)
-        registerStudent(rmAlunos, rmSeries)
+    if option == 1 and not block_option:
+        block_option = True
+        registerStudent(idStudent, idSeries, block_option)
         option = int(input("--> "))
 
     if option == 2:
         rmInscricao = int(input("\nInsira o RM do aluno: "))
-        for i in range(len(rmAlunos)):
-            if rmAlunos[i] == rmInscricao:
-                if rmSeries[i] == 2:
-                    chooseWorkShop(oficinasPorSerie[0], registroOficinas, rmInscricao, 0, oficinasLotadas)
-                elif rmSeries[i] == 3:
-                    chooseWorkShop(oficinasPorSerie[1], registroOficinas, rmInscricao, 1, oficinasLotadas)
-                elif rmSeries[i] == 4:
-                    chooseWorkShop(oficinasPorSerie[2], registroOficinas, rmInscricao, 2, oficinasLotadas)
-                elif rmSeries[i] == 5:
-                    chooseWorkShop(oficinasPorSerie[3], registroOficinas, rmInscricao, 3, oficinasLotadas)
+        for i in range(len(idStudent)):
+            if idStudent[i] == rmInscricao:
+                if idSeries[i] == 2:
+                    chooseWorkShop(workshopsByGrade[0], workshopRegistrationArray, rmInscricao, 0, fullWorkshops)
+                elif idSeries[i] == 3:
+                    chooseWorkShop(workshopsByGrade[1], workshopRegistrationArray, rmInscricao, 1, fullWorkshops)
+                elif idSeries[i] == 4:
+                    chooseWorkShop(workshopsByGrade[2], workshopRegistrationArray, rmInscricao, 2, fullWorkshops)
+                elif idSeries[i] == 5:
+                    chooseWorkShop(workshopsByGrade[3], workshopRegistrationArray, rmInscricao, 3, fullWorkshops)
 
             elif rmInscricao == 0:
                 break
 
-            elif rmInscricao not in rmAlunos:
+            elif rmInscricao not in idStudent:
                 print("\nAluno não cadastrado. Favor procurar a coordenação do Fundamental I")
                 break
 
     if option == 3:
-        fillStudentsInfo(rmAlunos, nomes, studentsInfo, rmSeries)
+        fillStudentsInfo(idStudent, names, studentsInfo, idSeries)
         sortArrayAlphabetically(studentsInfo)
-        menuLista = int(input("Listar Inscrições\n1 - Listar por Aluno\n2 - Listar por Oficina\n--> "))
-        if menuLista == 1:
+        menuList = int(input("\nListar Inscrições (em ordem alfabética)\n1 - Listar por Aluno\n2 - Listar por "
+                             "Oficina\n--> "))
+        if menuList == 1:
             print("\n***** Alunos inscritos – Ordem: Alfabética (nome) *****")
-            printStudentsInfo(studentsInfo, registroOficinas, tituloOficinas)
-        if menuLista == 2:
+            printStudentsInfo(studentsInfo, workshopRegistrationArray, workshopsTitle)
+        if menuList == 2:
             print("\n***** Alunos inscritos – Ordem: Alfabética (Oficinas) *****")
             print("\033[1mOficinas: \033[0m")
-            printStudentsInfoByWorkshop(studentsInfo, registroOficinas, tituloOficinas)
+            printStudentsInfoByWorkshop(studentsInfo, workshopRegistrationArray, workshopsTitle)
 
     if option == 4:
         break
 
-    showMenu()
+    showMenu(block_option)
     option = int(input("--> "))
