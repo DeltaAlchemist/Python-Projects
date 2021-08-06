@@ -1,5 +1,5 @@
 def fillWorkshopsByGrade(oficinas, serie2, serie3, serie4, serie5):
-    series = ((1, 3, 8, 9), (1, 2, 3, 7), (2, 3, 4, 6), (3, 4, 5, 6))
+    series = ((1, 3, 8, 10), (1, 2, 3, 7), (2, 3, 4, 6), (3, 4, 5, 9))
 
     for x in range(len(series)):
         for y in range(len(series[x])):
@@ -14,19 +14,13 @@ def fillWorkshopsByGrade(oficinas, serie2, serie3, serie4, serie5):
                 serie5.append(nomeOficina)
 
 
-def showMenu():
-    print("\n-- MENU --\nEscolha uma opção (1-4):\n1 - Cadastrar Alunos\n"
-          "2 - Fazer Inscrições\n3 - Listar Inscrições\n4 - Sair")
-
-
 def fillFullWorkshops(array):
     for x in range(4):
         array.append([0, 0, 0, 0])
 
 
 def chooseWorkShop(oficina, listaOficinas, idAluno, indexSerie, oficinaLotada):
-    oficinasSeries = ((1, 3, 8, 9), (1, 2, 3, 7), (2, 3, 4, 6), (3, 4, 5, 6))
-    fillFullWorkshops(oficinaLotada)
+    oficinasSeries = ((1, 3, 8, 10), (1, 2, 3, 7), (2, 3, 4, 6), (3, 4, 5, 9))
     while True:
         if len(searchStudentWorkshop(idAluno, listaOficinas)) > 2:
             print("\nNúmero limite de oficinas registradas alcançado. Você não pode mais inscrever esse aluno.")
@@ -88,8 +82,8 @@ def sortArrayAlphabetically(finalArr):
 def printStudentsInfo(array, oficina, tituloOficina):
     print()
     for j in array:
-        print("\033[1m RM: {0} - {1} - {2} \033[0m".format(str(j[0]), j[1], j[2]))
-        print("\033[1m Oficinas: \033[0m")
+        print("\033[1mRM: {0} - {1} - {2} \033[0m".format(str(j[0]), j[1], j[2]))
+        print("\033[1mOficinas: \033[0m")
         print(printStudentWorkshop(j[0], oficina, tituloOficina))
         print()
 
@@ -104,7 +98,7 @@ def searchStudentInWorkshop(rm, oficina, index):
 
 
 def printStudentsInfoByWorkshop(array, oficina, tituloOficina):
-    workshops = []  # Oficinas por extenso
+    nomeOficinas = []  # Oficinas por extenso
     rms = []  # RMs dos alunos cadastrados
     idxOficina = []  # Indexes das oficinas
     alunos = []  # RMs organizados pelo index das oficinas (nested)
@@ -113,18 +107,24 @@ def printStudentsInfoByWorkshop(array, oficina, tituloOficina):
     for k in array:
         rms.append(k[0])
     for rm in rms:
-        workshops.append(searchStudentWorkshop(rm, oficina))
-    for x in workshops:
+        nomeOficinas.append(searchStudentWorkshop(rm, oficina))
+    for x in nomeOficinas:
         for y in x:
             idxOficina.append(y)
 
     idxOficina = list(dict.fromkeys(idxOficina))  # Removendo oficinas repetidas
-    workshops.clear()
+    nomeOficinas.clear()
 
     for o in idxOficina:
-        workshops.append(printWorkshop(o, tituloOficina))  # Colocando as oficinas por extenso
+        nomeOficinas.append(printWorkshop(o, tituloOficina))  # Colocando as oficinas por extenso
 
-    for x in idxOficina:  # Relacionando RMs com os index da oficina (alunos[])
+    # Ordenando oficinas alfabeticamente:
+    zipped_lists = zip(nomeOficinas, idxOficina)
+    sorted_pairs = sorted(zipped_lists)
+    tuples = zip(*sorted_pairs)
+    nomeOficinas, idxOficina = [list(tupla) for tupla in tuples]
+
+    for x in idxOficina:  # Relacionando RMs com o index da oficina (alunos[])
         rmPack = [[]]
         for y in range(len(rms)):
             if searchStudentInWorkshop(rms[y], oficina, x):
@@ -132,9 +132,9 @@ def printStudentsInfoByWorkshop(array, oficina, tituloOficina):
             if y == len(rms) - 1:
                 alunos.append(rmPack[0])
 
-    for x in range(len(workshops)):
+    for x in range(len(nomeOficinas)):
         total = 0
-        print("> " + workshops[x])
+        print("> " + nomeOficinas[x])
         for y in array:
             for a in range(len(alunos[x])):  # Buscando info dos RMs (nome, serie)
                 if y[0] == alunos[x][a]:
@@ -158,7 +158,7 @@ def searchStudentWorkshop(idAluno, oficina):
 
 
 def printWorkshop(w, nomeOficina):
-    if w < 1 or w > 9:
+    if w < 1 or w > 10:
         return
     else:
         return nomeOficina[w]
@@ -192,10 +192,10 @@ def registerStudent(listaAlunos, listaPorSerie):
         rmDuplicado = False
         for x in range(len(listaAlunos)):
             if rmCadastro == listaAlunos[x]:
-                print("\nRM já existe no sistema!")
                 rmDuplicado = True
                 break
         if rmDuplicado:
+            print("\nRM já existe no sistema!")
             continue
 
         listaAlunos.append(rmCadastro)
@@ -203,15 +203,20 @@ def registerStudent(listaAlunos, listaPorSerie):
         nomeCadastro = input("\nInsira o nome do aluno: ")
         nomes.append(nomeCadastro)
 
-        serieCadastro = int(input("\nDigite (2) para 2º Série\n(3) para 3º Série\n(4) para 4º Série\n(5) para 5º "
-                                  "Série\n--> "))
+        serieCadastro = int(input("\n\033[1mEscolha a série do aluno:\033[0m\nDigite (2) para 2º Série\n(3) para 3º "
+                                  "Série\n(4) para 4º Série\n(5) para 5º Série\n--> "))
         while serieCadastro < 2 or serieCadastro > 5:
             print("\nSérie inválida! Apenas séries iniciais (1º a 5º)")
-            serieCadastro = int(input("\nDigite (2) para 2º Série\n(3) para 3º Série\n(4) para 4º Série\n(5) para "
-                                      "5º Série\n--> "))
+            serieCadastro = int(input("\n\033[1mEscolha a série do aluno:\033[0m\nDigite (2) para 2º Série\n"
+                                      "(3) para 3º Série\n(4) para 4º Série\n(5) para 5º Série\n--> "))
         listaPorSerie.append(serieCadastro)
 
     showMenu()
+
+
+def showMenu():
+    print("\n-- MENU --\nEscolha uma opção (1-4):\n1 - Cadastrar Alunos\n"
+          "2 - Fazer Inscrições\n3 - Listar Inscrições\n4 - Sair")
 
 
 # Listas
@@ -221,18 +226,19 @@ rmSeries = []
 menu_l = []
 
 # Oficinas
-registroOficinas = [[], [], [], [], [], [], [], [], [], []]
+registroOficinas = [[], [], [], [], [], [], [], [], [], [], []]
 
 tituloOficinas = ("",
-                  "Criar e contar histórias (2ª feira - Manhã)",
-                  "Teatro: Luz, Câmera e Ação (3ª feira - Manhã)",
-                  "A língua de sinais (4ª feira - Manhã)",
-                  "Expressão Artística (5ª feira - Manhã)",
-                  "Soletrando (6ª feira - Manhã)",
-                  "Leitura dinâmica (2ª feira / 5ª feira - Tarde)",
-                  "O corpo fala (3ª feira - Tarde)",
-                  "O mundo da imaginação (4ª feira - Tarde)",
-                  "Criando e recriando com emojis (6ª feira - Tarde)")
+                  "Criar e contar histórias (2ª feira - Matutino)",
+                  "Teatro: Luz, Câmera e Ação (3ª feira - Matutino)",
+                  "A língua de sinais (4ª feira - Matutino)",
+                  "Expressão Artística (5ª feira - Matutino)",
+                  "Soletrando (6ª feira - Matutino)",
+                  "Leitura dramática (2ª feira - Vespertino)",
+                  "O corpo fala (3ª feira - Vespertino)",
+                  "O mundo da imaginação (4ª feira - Vespertino)",
+                  "Leitura dinâmica (5ª feira - Vespertino)",
+                  "Criando e recriando com emojis (6ª feira - Vespertino)")
 
 oficinasPorSerie = [[], [], [], []]
 oficinasLotadas = []
@@ -240,6 +246,7 @@ studentsInfo = []
 
 # Main Class:
 fillWorkshopsByGrade(tituloOficinas, oficinasPorSerie[0], oficinasPorSerie[1], oficinasPorSerie[2], oficinasPorSerie[3])
+fillFullWorkshops(oficinasLotadas)
 print("\nBem-vindo(a) ao Colégio Nova Esperança - Evento Literário")
 showMenu()
 option = int(input("--> "))
